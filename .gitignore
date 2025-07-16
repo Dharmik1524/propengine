@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Prisma local db (if used)
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# React build
+frontend/build/
+
+# Logs
+*.log
