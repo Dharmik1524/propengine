@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import leadRoutes from "./routes/leads.js";
 import listingRoutes from "./routes/listing.js";
+import matchRoutes from "./routes/match.js";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/leads", leadRoutes);
 app.use("/api/listings", listingRoutes);
+app.use("/api/match-leads", matchRoutes);
 
 app.get("/", (req, res) => res.send("PropEngine backend running"));
 
