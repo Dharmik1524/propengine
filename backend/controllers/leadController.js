@@ -1,6 +1,9 @@
+// File: /controllers/leadController.js
 import { PrismaClient } from "@prisma/client";
 import OpenAI from "openai";
 import { findBestListingMatch } from "../utils/matcher.js";
+import fs from "fs/promises";
+import path from "path";
 
 const prisma = new PrismaClient();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -13,34 +16,16 @@ const REQUIRED_FIELDS = [
   "budgetMax",
 ];
 
-const systemPrompt = `
-You're an AI assistant helping homebuyers submit their property needs.
-
-Required fields:
-- customerName
-- requirements
-- location
-- budgetMin (USD)
-- budgetMax (USD)
-
-If any field is missing, DO NOT return JSON.
-Instead, ask a follow-up question.
-
-Once all required fields are collected, reply like this:
-"Great. I have all the required information to create your lead. Here’s what I’ve gathered:
-- Name: ...
-- Location: ...
-- Budget: ...
-- Requirements: ...
-Do you want to submit and get contacted by property agents?"
-
-Wait for confirmation. Only then reply with valid JSON and this line:
-"Notice: Buyer lead has been saved successfully."
-`;
+const loadPrompt = async (filename) => {
+  const filePath = path.resolve("prompts", filename);
+  console.log(filename);
+  return await fs.readFile(filePath, "utf-8");
+};
 
 export const createLead = async (req, res) => {
   try {
     const { message, history = [] } = req.body;
+    const systemPrompt = await loadPrompt("lead.txt");
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -54,10 +39,11 @@ export const createLead = async (req, res) => {
     });
 
     const reply = gpt.choices?.[0]?.message?.content;
-    if (!reply)
+    if (!reply) {
       return res
         .status(500)
         .json({ success: false, error: "No response from OpenAI." });
+    }
 
     console.log("GPT raw reply:", reply);
 
@@ -103,7 +89,7 @@ export const createLead = async (req, res) => {
 
     try {
       const leadVec = JSON.parse(leadData.embedding);
-      const tolerance = 100000; // ⬅ configurable per platform, later from ENV or agent profile
+      const tolerance = 100000;
       const match = await findBestListingMatch(
         leadVec,
         savedLead.budgetMin,
