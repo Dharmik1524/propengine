@@ -46,9 +46,9 @@ export default function ChatBox({ endpoint }) {
   }, [messages]);
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-2xl h-[80vh] bg-white border border-gray-200 rounded-xl shadow-xl flex flex-col relative">
-        <header className="bg-blue-600 text-white text-xl font-semibold px-6 py-4 rounded-t-xl shadow flex flex-col items-center">
+    
+      <div className="sm:max-w-xl md:max-w-2xl lg:max-w-3xl h-[80vh] bg-white border border-gray-200 rounded-xl shadow-xl flex flex-col mx-auto">
+        <header className="bg-purple-900 text-white text-xl  font-semibold px-6 py-4 rounded-t-xl shadow flex flex-col items-center">
           PropEngine Assistant
         </header>
 
@@ -60,7 +60,7 @@ export default function ChatBox({ endpoint }) {
             >
               <div className="max-w-xs w-fit rounded-xl bg-gray-50 p-4 shadow">
                 <div className="text-sm font-semibold text-gray-700 mb-1">
-                  {msg.role === "user" ? "User" : "PropEngine"}
+                  {msg.role === "user" ? "You" : "PropEngine"}
                 </div>
                 <p className="text-gray-600 whitespace-pre-line text-sm">
                   {msg.content}
@@ -74,21 +74,22 @@ export default function ChatBox({ endpoint }) {
         <div className="px-6 py-4 border-t flex gap-2">
           <input
             type="text"
-            className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
           <button
+          className="bg-purple-900  hover:bg-purple-700 text-white text-xs sm:text-sm md:text-base font-medium px-5 py-2 rounded-full"
             onClick={sendMessage}
             disabled={loading}
-            className="bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-blue-700 transition"
+            
           >
             {loading ? "..." : "Send"}
           </button>
         </div>
       </div>
-    </div>
+    
   );
 }
